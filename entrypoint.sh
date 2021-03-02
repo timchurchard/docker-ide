@@ -16,7 +16,7 @@ if [ ! -z "$GIT_USER_NAME" ] && [ ! -z "$GIT_USER_EMAIL" ]; then
 fi
 
 # Setting permissions on /home/dev config
-chown -R dev: /home/dev/.??*
+chown -R dev: /home/dev/.??* &
 
 # Step down to dev user
-gosu dev tmux -u -2 "$@"
+gosu dev sh -c "cd /workspace ; mkdir -p .vim-tmp ; tmux -u -2 $@"
