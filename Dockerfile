@@ -28,7 +28,7 @@ WORKDIR /tmp
 RUN apt-get update -y && \
     apt-get install -y git wget \
                        ncurses-dev \
-                       zlib1g-dev libssl-dev \
+                       zlib1g-dev libssl-dev libffi-dev \
                        build-essential
 
 # Build and install vim in /opt
@@ -48,7 +48,7 @@ RUN wget -q -O python.tgz ${PYTHON_URL} && \
     cd python && \
     ./configure --prefix=/opt \
                 --enable-optimizations \
-								--with-system-ffi && \
+                --with-system-ffi && \
     make -j ${WORKERS} && make install
 
 # Install golang
@@ -91,6 +91,7 @@ RUN mkdir /workspace && \
     apt-get update -y && \
     apt-get install -y sudo git curl zsh tmux gosu \
                        locales \
+                       build-essential \
                        openssh-client
 
 # Setup locales
