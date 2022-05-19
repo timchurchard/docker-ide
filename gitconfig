@@ -1,0 +1,41 @@
+[push]
+    default = simple
+[core]
+    compression = 9
+    editor = vim
+    whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol,space-before-tab
+[apply]
+    whitespace = fix
+[branch]
+    autosetuprebase = always
+[color]
+    ui = auto
+[alias]
+    br = branch -vva
+    bd = log --oneline --cherry --date=short --pretty=format:'%Cred%h %Cgreen%an %Cblue%ad %Creset%s'
+    bdv = log --cherry
+    ca = commit --amend --date="now"
+    ci = commit
+    co = checkout
+    cp = cherry-pick
+    df = diff
+    dl = fetch --prune
+    lg = log --stat
+    lgv = log --graph --abbrev-commit --decorate --date=relative --all
+    lgs = log --graph --oneline --decorate --date=relative --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
+    me = merge --ff-only
+    st = status
+    up = rebase
+    sq = rebase -i
+    gca = gc --aggressive --prune
+    su = submodule update --init --recursive
+    fpush = push --force-with-lease
+    spush = push --recurse-submodules=on-demand
+    stu = status -uno
+    ss = stash
+[fetch]
+    recurseSubmodules = yes
+[status]
+    submoduleSummary = false
+[diff]
+    submodule = log
