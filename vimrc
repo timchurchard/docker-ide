@@ -85,6 +85,10 @@ colorscheme gruvbox
 set bg=dark
 " set bg=light
 
+" ctrlp
+let g:ctrlp_map = '<c-p>'
+let g:ctrlp_cmd = 'CtrlP'
+
 " Mapping to NERDTree
 nnoremap <C-n> :NERDTreeToggle<cr>
 let NERDTreeIgnore=['\.vim$', '\~$', '\.pyc$']
@@ -92,3 +96,13 @@ let NERDTreeIgnore=['\.vim$', '\~$', '\.pyc$']
 " vim-go
 let g:go_fmt_command="gopls"
 let g:go_gopls_gofumpt=1
+
+" syntastic
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0

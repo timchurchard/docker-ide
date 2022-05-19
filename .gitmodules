@@ -16,3 +16,15 @@
 [submodule "vim-files/bundle/vim-go"]
 	path = vim-files/bundle/vim-go
 	url = https://github.com/fatih/vim-go.git
+[submodule "vim-files/bundle/syntastic"]
+	path = vim-files/bundle/syntastic
+	url = https://github.com/vim-syntastic/syntastic.git
+[submodule "vim-files/bundle/ctrlp.vim"]
+	path = vim-files/bundle/ctrlp.vim
+	url = https://github.com/ctrlpvim/ctrlp.vim.git
+[submodule "vim-files/bundle/YouCompleteMe"]
+	path = vim-files/bundle/YouCompleteMe
+	url = https://github.com/ycm-core/YouCompleteMe.git
+[submodule "vim-files/bundle/vim-airline"]
+	path = vim-files/bundle/vim-airline
+	url = https://github.com/vim-airline/vim-airline.git
