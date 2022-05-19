@@ -1,4 +1,4 @@
-export PATH=/opt/bin:/opt/go/bin:$PATH
+export PATH=/opt/bin:/opt/go/bin:/opt/venv/bin:$PATH
 
 export ZSH="/home/dev/.oh-my-zsh"
 
