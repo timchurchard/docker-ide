@@ -1,7 +1,7 @@
 #
 #
 #
-FROM amd64/debian:9-slim as builder
+FROM amd64/debian:testing-slim as builder
 
 # vim git repo commit or tag
 ENV VIM_COMMIT=v8.2.2558
@@ -28,16 +28,8 @@ WORKDIR /tmp
 RUN apt-get update -y && \
     apt-get install -y git wget \
                        ncurses-dev \
-                       zlib1g-dev libssl-dev \
+                       zlib1g-dev libssl-dev libffi-dev \
                        build-essential
-
-# Build and install vim in /opt
-RUN git clone https://github.com/vim/vim.git && \
-    cd vim && \
-    git reset --hard ${VIM_COMMIT} && \
-    ./configure --prefix=/opt \
-                --enable-python3interp=yes && \
-    make -j ${WORKERS} && make install
 
 # Build and install python in /opt
 RUN wget -q -O python.tgz ${PYTHON_URL} && \
@@ -48,7 +40,24 @@ RUN wget -q -O python.tgz ${PYTHON_URL} && \
     cd python && \
     ./configure --prefix=/opt \
                 --enable-optimizations \
-								--with-system-ffi && \
+                --enable-shared \
+                --with-system-ffi && \
+    make -j ${WORKERS} && make install
+
+# Build and install vim in /opt
+RUN git clone https://github.com/vim/vim.git && \
+    cd vim && \
+    git reset --hard ${VIM_COMMIT} && \
+    ldconfig /opt/lib && \
+    LDFLAGS="-rdynamic" PATH=/opt/bin:$PATH ./configure --prefix=/opt \
+                                            --with-features=huge \
+                                            --enable-terminal \
+                                            --enable-multibyte \
+                                            --enable-cscope \
+                                            --enable-fail-if-missing \
+                                            --enable-python3interp=yes \
+                                            --with-python3-command=/opt/bin/python3 \
+                                            --with-python3-config-dir=/opt/lib/python3.8/config-3.8-x86_64-linux-gnu && \
     make -j ${WORKERS} && make install
 
 # Install golang
@@ -71,7 +80,8 @@ RUN git clone https://github.com/ohmyzsh/ohmyzsh.git /opt/ohmyzsh.git
 
 # Build python venv used by vim (for pylint etc)
 COPY vim_py_reqs.txt /opt/
-RUN /opt/bin/python3 -mvenv /opt/venv && \
+RUN ldconfig /opt/lib && \
+    /opt/bin/python3 -mvenv /opt/venv && \
     /opt/venv/bin/python3 -mpip install -U pip setuptools && \
     /opt/venv/bin/pip3 install -r /opt/vim_py_reqs.txt
 
@@ -83,15 +93,20 @@ COPY scripts /opt/scripts
 #
 # Start on the final image
 #
-FROM amd64/debian:9-slim
+FROM amd64/debian:testing-slim
 
 COPY --from=builder /opt /opt
 
-RUN mkdir /workspace && \
-    apt-get update -y && \
+# Install dev side utils
+RUN apt-get update -y && \
     apt-get install -y sudo git curl zsh tmux gosu \
                        locales \
+                       build-essential cmake \
                        openssh-client
+
+# Setup workspace and enable sudo access
+RUN mkdir /workspace && \
+    echo "dev       ALL=(ALL)       NOPASSWD: ALL" > /etc/sudoers
 
 # Setup locales
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
@@ -121,6 +136,16 @@ RUN ln -sf /opt/ohmyzsh.git /home/dev/.oh-my-zsh
 RUN mkdir /home/dev/.vim && \
     ln -sf /opt/vim-files/autoload /home/dev/.vim/autoload && \
     ln -sf /opt/vim-files/bundle /home/dev/.vim/bundle
+
+# Install YouCompleteMe
+# TODO: How to tie the submodule to the reset here
+RUN cd /opt/vim-files/bundle && \
+    rm -rf YouCompleteMe && \
+    git clone https://github.com/ycm-core/YouCompleteMe.git && \
+    cd YouCompleteMe && git reset --hard dbf6763 && \
+    ldconfig /opt/lib && \
+    git submodule update --init --recursive && \
+    PATH=/opt/go/bin:$PATH /opt/bin/python3 install.py --go-completer
 
 # Copy in user files
 COPY vimrc /home/dev/.vim/

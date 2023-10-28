@@ -1,4 +1,5 @@
-export PATH=/opt/bin:/opt/go/bin:$PATH
+export PATH=/opt/bin:/opt/go/bin:/opt/venv/bin:$PATH
+# export LD_LIBRARY_PATH=/opt/lib:$LD_LIBRARY_PATH
 
 export ZSH="/home/dev/.oh-my-zsh"
 
@@ -32,4 +33,3 @@ alias pylint='/opt/venv/bin/pylint --rcfile=/home/dev/.pylintrc'
 alias py-fmt='/opt/scripts/py-fmt.sh'
 
 alias gofmt='gofumpt'
-
