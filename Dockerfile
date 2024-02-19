@@ -1,5 +1,5 @@
 # timchurchard/ide IDE for golang with neovim in docker
-FROM ubuntu:23.10
+FROM ubuntu:24.04
 
 # Install system tools
 RUN apt-get update -y && apt-get upgrade -y && \
