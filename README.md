@@ -11,6 +11,8 @@ Based on [ubuntu](https://hub.docker.com/_/ubuntu) docker image. Extra tools:
 
 See [Cheatsheet](./CHEATSHEET.md) for keys
 
+![](debug.png)
+
 ## Build
 
 `docker build -t timchurchard/ide .`
