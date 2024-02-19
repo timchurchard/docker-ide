@@ -1,2 +1,4 @@
-- YouCompleteMe for golang not working
+- Dockerfile second stage to limit final layers
+- user-entrypoint.sh as gosu line is too long
+-
 
