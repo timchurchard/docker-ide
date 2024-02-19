@@ -1,7 +1,7 @@
 export PATH=/opt/bin:/opt/go/bin:/opt/venv/bin:$PATH
 # export LD_LIBRARY_PATH=/opt/lib:$LD_LIBRARY_PATH
 
-export ZSH="/home/dev/.oh-my-zsh"
+export ZSH="/home/ubuntu/.oh-my-zsh"
 
 export ZSH_THEME="agnoster"
 
@@ -27,11 +27,7 @@ tm() {
 # Source the users extra env
 source ~/.env
 
-alias vi=nvim
-alias vim=nvim
-
-alias pylint='/opt/venv/bin/pylint --rcfile=/home/dev/.pylintrc'
-alias py-fmt='/opt/scripts/py-fmt.sh'
+alias pylint='/opt/venv/bin/pylint --rcfile=/home/ubuntu/.pylintrc'
 
 alias gofmt='gofumpt'
 
