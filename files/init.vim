@@ -1,6 +1,5 @@
 set termguicolors
 call plug#begin('~/.config/nvim/plugged')
-Plug 'lewis6991/impatient.nvim'
 
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
@@ -48,9 +47,6 @@ Plug 'EdenEast/nightfox.nvim'
 " Plug 'ray-x/aurora'
 
 call plug#end()
-
-" impatient must run first
-lua require('impatient')
 
 " Relax file compatibility restriction with original vi
 " (not necessary to set with neovim, but useful for vim)
@@ -183,7 +179,6 @@ nnoremap <silent> <leader>a :AerialToggle float<cr>
 " use ;; for escape - http://vim.wikia.com/wiki/Avoid_the_escape_key
 inoremap ;; <Esc>
 
-
 " Instead of ctrl+p
 nnoremap <C-p> :Telescope find_files<CR>
 
@@ -198,7 +193,8 @@ nnoremap <C-t> :ToggleTerm size=25<CR>
 "C-o godef back
 "C-l godef forward
 
-let g:python3_host_prog = '/home/tc/.config/nvim/venv38/bin/python3'
+"todo installed in /opt/venv
+"let g:python3_host_prog = '/home/tc/.config/nvim/venv38/bin/python3'
 
 let g:better_whitespace_enabled=1
 let g:strip_whitespace_on_save=1
@@ -232,6 +228,8 @@ autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | exe 'NvimTreeToggle' 
 " autocmd bufenter * if (winnr("$") == 1 && exists("b:NvimTree") && b:NvimTree.isTabTree()) | q | endif
 
 lua <<EOF
+vim.loader.enable()
+
 require('nvim-autopairs').setup({
      fast_wrap = {
           chars = { '{', '[', '(', '"', "'" },
@@ -267,4 +265,3 @@ local protocol = require'vim.lsp.protocol'
 require('aerial').setup({})
 
 EOF
-
