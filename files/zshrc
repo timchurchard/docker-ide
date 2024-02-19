@@ -31,6 +31,10 @@ alias pylint='/opt/venv/bin/pylint --rcfile=/home/ubuntu/.pylintrc'
 
 alias gofmt='gofumpt'
 
+alias tf='terraform'
+
+alias tf='terragrunt'
+
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

@@ -71,7 +71,7 @@ RUN curl -o golang.tgz -L ${GOLANG_URL} && \
     tar -C /opt -zxf golang.tgz
 
 # tree-sitter
-RUN curl -OL https://github.com/tree-sitter/tree-sitter/releases/download/v0.20.4/tree-sitter-linux-x64.gz && \
+RUN curl -OL https://github.com/tree-sitter/tree-sitter/releases/download/v0.20.9/tree-sitter-linux-x64.gz && \
 	gunzip tree-sitter-linux-x64.gz && \
 	chmod a+x tree-sitter-linux-x64 && \
 	mv tree-sitter-linux-x64 /usr/bin/tree-sitter && \
@@ -93,6 +93,8 @@ ENV LC_ALL en_US.UTF-8
 ENV GROUP=ubuntu
 ENV USER=ubuntu
 ENV UID=1000
+
+RUN chsh -s /usr/bin/zsh ubuntu
 
 WORKDIR /home/ubuntu
 

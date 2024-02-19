@@ -239,7 +239,7 @@ require('nvim-autopairs').setup({
 require'nvim-tree'.setup()
 
 require("toggleterm").setup{
---  open_mapping = [[<c-;>]],
+    open_mapping = [[<c-\>]],
 }
 
 require 'go'.setup({
