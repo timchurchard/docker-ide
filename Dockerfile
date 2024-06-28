@@ -62,8 +62,8 @@ RUN apt install -y ripgrep fd-find
 RUN apt-get autoclean -y && apt-get autoremove -y && apt-get clean -y
 
 # Install golang
-ENV GOLANG_URL=https://golang.org/dl/go1.21.7.linux-amd64.tar.gz
-ENV GOLANG_SHA256=13b76a9b2a26823e53062fa841b07087d48ae2ef2936445dc34c4ae03293702c
+ENV GOLANG_URL=https://golang.org/dl/go1.21.11.linux-amd64.tar.gz
+ENV GOLANG_SHA256=54a87a9325155b98c85bc04dc50298ddd682489eb47f486f2e6cb0707554abf0
 
 RUN curl -o golang.tgz -L ${GOLANG_URL} && \
     echo "$GOLANG_SHA256 golang.tgz" > golang.tgz.sha256 && \
