@@ -214,7 +214,7 @@ let g:terraform_fmt_on_save=1
 let g:terraform_align=1
 
 " gofmt on save
-autocmd BufWritePre *.go :silent! lua require('go.format').goimport()
+autocmd BufWritePre *.go :silent! lua require('go.format').goimports()
 
 " Auto start NERD tree when opening a directory
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NvimTreeToggle' argv()[0] | wincmd p | ene | wincmd p | endif
@@ -243,9 +243,9 @@ require("toggleterm").setup{
 }
 
 require 'go'.setup({
-  goimport = 'gopls', -- if set to 'gopls' will use golsp format
+  goimports = 'gopls', -- if set to 'gopls' will use golsp format
   gofmt = 'gopls', -- if set to gopls will use golsp format
-  max_line_len = 160,
+  --max_line_len = 160,
   tag_transform = false, -- gomodifytag overwrite eg snakecase camelcase
   test_dir = '',
   comment_placeholder = ' ',
@@ -258,7 +258,7 @@ require 'go'.setup({
 cfg = {...}  -- add you config here
 require "lsp_signature".setup(cfg)
 
-require("go.format").goimport()  -- goimport + gofmt
+require("go.format").goimports()  -- goimport + gofmt
 
 local protocol = require'vim.lsp.protocol'
 

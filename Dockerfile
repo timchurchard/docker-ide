@@ -41,8 +41,8 @@ RUN apt install -y python3 python3-venv && \
 ENV PATH=$PATH:/opt/venv/bin
 
 # Install neovim: https://github.com/neovim/neovim/wiki/Installing-Neovim
-ENV VIM_COMMIT=v0.9.5
-RUN apt install -y lua-nvim luajit ruby-dev && \
+ENV VIM_COMMIT=v0.10.0
+RUN apt install -y luajit ruby-dev && \
 	apt remove neovim neovim-runtime neovim-qt && \
 	git clone https://github.com/neovim/neovim.git neovim.git && \
 	cd neovim.git && \
@@ -159,13 +159,9 @@ COPY files/coc-settings.json .config/nvim/
 
 RUN zsh -c ". $NVM_DIR/nvm.sh && cd ~/.config/nvim/plugged/coc.nvim && npm ci"
 
-RUN echo ':PlugInstall' > /tmp/gib.txt && \
-	echo ':GoInstallBinaries' >> /tmp/gib.txt && \
-    echo ':TSInstall go' >> /tmp/gib.txt && \
-	echo ':q' >> /tmp/gib.txt && \
-	echo ':q' >> /tmp/gib.txt && \
-    echo ':q' >> /tmp/gib.txt && \
-	zsh -c ". $NVM_DIR/nvm.sh && nvim -s /tmp/gib.txt"
+RUN nvim +:PlugInstall +:qa \
+	nvim +:GoInstallBinaries +:qa \
+	nvim "+:TSInstall go" +:qa
 
 # Copy in final bits for /opt
 COPY files/entrypoint.sh /opt/
