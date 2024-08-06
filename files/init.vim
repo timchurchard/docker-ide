@@ -173,6 +173,20 @@ nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
+" enable "enter to complete" in coc
+" inoremap <silent><expr> <cr> coc#pum#visible() ? coc#pum#confirm() : "\<CR>"
+
+" use <tab> to trigger completion and navigate to the next complete item
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+inoremap <silent><expr> <Tab>
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+
 " toggle the tag bar
 nnoremap <silent> <leader>a :AerialToggle float<cr>
 
@@ -244,8 +258,8 @@ require("toggleterm").setup{
 
 require 'go'.setup({
   goimports = 'gopls', -- if set to 'gopls' will use golsp format
-  gofmt = 'gopls', -- if set to gopls will use golsp format
-  --max_line_len = 160,
+  gofmt = 'gofmt', -- if set to gopls will use golsp format
+  max_line_len = 160,
   tag_transform = false, -- gomodifytag overwrite eg snakecase camelcase
   test_dir = '',
   comment_placeholder = ' ',

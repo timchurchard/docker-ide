@@ -40,6 +40,12 @@ RUN apt install -y python3 python3-venv && \
 
 ENV PATH=$PATH:/opt/venv/bin
 
+# Install wordgrinder (https://github.com/davidgiven/wordgrinder)
+RUN apt install -y ninja-build libncursesw5-dev zlib1g-dev libglfw3-dev build-essential pkg-config xxd python3 python3-pil && \
+	mkdir -p /usr/local/man/man1/ && \
+	git clone https://github.com/davidgiven/wordgrinder.git wordgrinder.git &&	\
+	cd wordgrinder.git && make && make install
+
 # Install neovim: https://github.com/neovim/neovim/wiki/Installing-Neovim
 ENV VIM_COMMIT=v0.10.0
 RUN apt install -y luajit ruby-dev && \
@@ -62,8 +68,8 @@ RUN apt install -y ripgrep fd-find
 RUN apt-get autoclean -y && apt-get autoremove -y && apt-get clean -y
 
 # Install golang
-ENV GOLANG_URL=https://golang.org/dl/go1.21.11.linux-amd64.tar.gz
-ENV GOLANG_SHA256=54a87a9325155b98c85bc04dc50298ddd682489eb47f486f2e6cb0707554abf0
+ENV GOLANG_URL=https://golang.org/dl/go1.21.12.linux-amd64.tar.gz
+ENV GOLANG_SHA256=121ab58632787e18ae0caa8ae285b581f9470d0f6b3defde9e1600e211f583c5
 
 RUN curl -o golang.tgz -L ${GOLANG_URL} && \
     echo "$GOLANG_SHA256 golang.tgz" > golang.tgz.sha256 && \
@@ -121,7 +127,7 @@ RUN curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubu
 RUN mkdir -p ~/.config/nvim/plugged && cd ~/.config/nvim/plugged && \
 	git clone --depth 1 https://github.com/stevearc/aerial.nvim.git && \
 	git clone --depth 1 https://github.com/nvim-lua/plenary.nvim.git && \
-	git clone --branch 0.1.5 --depth 1 https://github.com/nvim-telescope/telescope.nvim.git && \
+	git clone --branch 0.1.8 --depth 1 https://github.com/nvim-telescope/telescope.nvim.git && \
 	git clone --depth 1 https://github.com/windwp/nvim-autopairs.git && \
 	git clone --depth 1 https://github.com/ntpeters/vim-better-whitespace.git && \
 	git clone --depth 1 https://github.com/neovim/nvim-lspconfig.git && \
@@ -132,7 +138,7 @@ RUN mkdir -p ~/.config/nvim/plugged && cd ~/.config/nvim/plugged && \
 	git clone --depth 1 https://github.com/ray-x/guihua.lua.git && \
 	git clone --depth 1 https://github.com/ray-x/lsp_signature.nvim.git && \
 	git clone --depth 1 https://github.com/ray-x/go.nvim.git && \
-	git clone --depth 1 https://github.com/neoclide/coc.nvim.git && \
+	git clone --branch release --depth 1 https://github.com/neoclide/coc.nvim.git && \
 	git clone --depth 1 https://github.com/kyazdani42/nvim-web-devicons.git && \
 	git clone --depth 1 https://github.com/kyazdani42/nvim-tree.lua.git && \
 	git clone --depth 1 https://github.com/vim-airline/vim-airline.git && \
@@ -157,11 +163,12 @@ COPY files/vimrc .config/nvim/
 COPY files/init.vim .config/nvim/
 COPY files/coc-settings.json .config/nvim/
 
-RUN zsh -c ". $NVM_DIR/nvm.sh && cd ~/.config/nvim/plugged/coc.nvim && npm ci"
+RUN zsh -c ". $NVM_DIR/nvm.sh && cd ~/.config/nvim/plugged/coc.nvim && npm install && npm ci"
 
 RUN nvim +:PlugInstall +:qa \
 	nvim +:GoInstallBinaries +:qa \
-	nvim "+:TSInstall go" +:qa
+	nvim "+:TSInstall go" +:qa \
+	nvim "+:CocInstall coc-json coc-tsserver coc-go" +:qa
 
 # Copy in final bits for /opt
 COPY files/entrypoint.sh /opt/

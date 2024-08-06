@@ -13,4 +13,4 @@ fi
 chown -R ubuntu: /home/ubuntu/.??* &
 
 # Step down to ubuntu user
-gosu ubuntu sh -c "nvim -s /tmp/gib.txt ; if [ ! -z \"$GIT_USER_NAME\" ]; then git config --global user.name \"$GIT_USER_NAME\"; git config --global user.email \"$GIT_USER_EMAIL\"; fi; cd /workspace ; mkdir -p .vim-tmp ; tmux -u -2 $@"
+gosu ubuntu sh -c "if [ ! -z \"$GIT_USER_NAME\" ]; then git config --global user.name \"$GIT_USER_NAME\"; git config --global user.email \"$GIT_USER_EMAIL\"; fi; cd /workspace ; mkdir -p .vim-tmp ; tmux -u -2 $@"
