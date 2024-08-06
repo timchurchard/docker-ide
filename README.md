@@ -5,7 +5,7 @@ Portable IDE for golang with neovim, tmux, &amp; zsh in docker.
 Based on [ubuntu](https://hub.docker.com/_/ubuntu) docker image. Extra tools:
 - [aws cli v2](https://github.com/aws/aws-cli/tree/v2)
 - [terraform](https://www.terraform.io/) (1.4.5) and [terragrunt](https://terragrunt.gruntwork.io/) v0.45.4
-- github [cli](https://github.com/cli/cli) (gh)
+- [github cli](https://github.com/cli/cli) (gh)
 
 **Note** I built a docker image full of useful tools and setup for me. I do not care about size. Be aware the build and final image is large.
 
@@ -51,8 +51,9 @@ vim-go is installed with [gofumpt](https://github.com/mvdan/gofumpt) as the defa
 
 ### golang
 
-go 1.21.7 is installed with related tools like [golangci-lint](https://github.com/golangci/golangci-lint) and [delve](https://github.com/go-delve/delve.
+go 1.21.12 is installed with related tools like [golangci-lint](https://github.com/golangci/golangci-lint) and [delve](https://github.com/go-delve/delve.
 
 ### other
 
-- [rexi](https://github.com/royreznik/rexi) CLI tool for testing regex
+- [rexi](https://github.com/royreznik/rexi) TUI tool for testing regex
+- [wordgriner](https://github.com/davidgiven/wordgrinder) TUI for word processing
