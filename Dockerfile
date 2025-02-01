@@ -3,7 +3,7 @@ FROM ubuntu:24.04
 
 # Install system tools
 RUN apt-get update -y && apt-get upgrade -y && \
-    apt install -y sudo gosu git curl zsh tmux apt-utils gnupg software-properties-common unzip locales build-essential cmake gettext htop
+    apt install -y sudo gosu git curl zsh tmux apt-utils gnupg software-properties-common unzip locales build-essential cmake gettext htop jq
 
 # Install Github CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg && \
@@ -68,8 +68,8 @@ RUN apt install -y ripgrep fd-find
 RUN apt-get autoclean -y && apt-get autoremove -y && apt-get clean -y
 
 # Install golang
-ENV GOLANG_URL=https://golang.org/dl/go1.21.12.linux-amd64.tar.gz
-ENV GOLANG_SHA256=121ab58632787e18ae0caa8ae285b581f9470d0f6b3defde9e1600e211f583c5
+ENV GOLANG_URL=https://golang.org/dl/go1.23.5.linux-amd64.tar.gz
+ENV GOLANG_SHA256=cbcad4a6482107c7c7926df1608106c189417163428200ce357695cc7e01d091
 
 RUN curl -o golang.tgz -L ${GOLANG_URL} && \
     echo "$GOLANG_SHA256 golang.tgz" > golang.tgz.sha256 && \
