@@ -45,7 +45,7 @@ go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 go install github.com/blmayer/awslambdarpc@latest
 
 # even more tools
-go install github.com/danvergara/dblab@latest
+go install github.com/danvergara/dblab@v0.9.2
 go install github.com/jesseduffield/lazydocker@latest
 
 # Install fixed version of linter !!

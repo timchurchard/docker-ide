@@ -13,7 +13,8 @@ fi
 
 # If .ssh directory exists then
 
+# cd before mkdir so the swap dir lands in /workspace, not home #
+cd /workspace
 mkdir -p .vim-tmp
 
-cd /workspace
-tmux -u -2 $@
+tmux -u -2 "$@"

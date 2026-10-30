@@ -141,10 +141,13 @@ RUN mkdir -p ~/.config/nvim/plugged && cd ~/.config/nvim/plugged && \
 	git clone --depth 1 https://github.com/windwp/nvim-autopairs.git && \
 	git clone --depth 1 https://github.com/ntpeters/vim-better-whitespace.git && \
 	git clone --depth 1 https://github.com/neovim/nvim-lspconfig.git && \
-	git clone --branch master --depth 1 https://github.com/nvim-treesitter/nvim-treesitter.git && \
+	git init --separate-git-dir=/tmp/nvim-treesitter.git nvim-treesitter && \
+	git -C nvim-treesitter remote add origin https://github.com/nvim-treesitter/nvim-treesitter.git && \
+	git -C nvim-treesitter fetch --depth 1 origin cf12346a3414fa1b06af75c79faebe7f76df080a && \
+	git -C nvim-treesitter checkout --quiet FETCH_HEAD && \
 	git clone --branch 0.10.0 --depth 1 https://github.com/mfussenegger/nvim-dap.git && \
 	git clone --branch v4.0.0 --depth 1 https://github.com/rcarriga/nvim-dap-ui.git && \
-	git clone --depth 1 https://github.com/nvim-neotest/nvim-nio.git && \
+	git clone --branch v1.9.4 --depth 1 https://github.com/nvim-neotest/nvim-nio.git && \
 	git clone --depth 1 https://github.com/theHamsta/nvim-dap-virtual-text.git && \
 	git clone --depth 1 https://github.com/ray-x/guihua.lua.git && \
 	git clone --depth 1 https://github.com/ray-x/lsp_signature.nvim.git && \
@@ -180,7 +183,9 @@ RUN zsh -c ". $NVM_DIR/nvm.sh && cd ~/.config/nvim/plugged/coc.nvim && npm insta
 COPY files/install-nvim-extras.sh /tmp/
 # RUN /tmp/install-nvim-extras.sh # TODO: not working in docker build. needs investigation
 COPY files/install-nvim-extras.tar.gz /tmp/
-RUN tar xzfp /tmp/install-nvim-extras.tar.gz -C /
+ENV NVIM_EXTRAS_SHA256=8f1ba390d989f2ca3910dc5d0aec4aec1e9367f4205a3a0b6461e33685c69a3a
+RUN echo "$NVIM_EXTRAS_SHA256 /tmp/install-nvim-extras.tar.gz" | sha256sum --check && \
+	tar xzfp /tmp/install-nvim-extras.tar.gz --no-same-owner --no-same-permissions -C /
 
 COPY files/zshrc .zshrc
 COPY files/gitconfig .gitconfig
