@@ -137,7 +137,7 @@ RUN mkdir -p ~/.config/nvim/plugged && cd ~/.config/nvim/plugged && \
     git config --global advice.detachedHead false && \
 	git clone --depth 1 https://github.com/stevearc/aerial.nvim.git && \
 	git clone --depth 1 https://github.com/nvim-lua/plenary.nvim.git && \
-	git clone --branch 0.2.1 --depth 1 https://github.com/nvim-telescope/telescope.nvim.git && \
+	git clone --branch v0.2.2 --depth 1 https://github.com/nvim-telescope/telescope.nvim.git && \
 	git clone --depth 1 https://github.com/windwp/nvim-autopairs.git && \
 	git clone --depth 1 https://github.com/ntpeters/vim-better-whitespace.git && \
 	git clone --depth 1 https://github.com/neovim/nvim-lspconfig.git && \
