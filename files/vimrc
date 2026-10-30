@@ -79,7 +79,7 @@ set dir=/workspace/.vim-tmp
 " ========== Plugin Settings ========== "
 
 " Colour
-colorscheme gruvbox
+" colorscheme gruvbox
 
 " gruvbox
 set bg=dark

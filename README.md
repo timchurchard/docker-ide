@@ -11,7 +11,7 @@ Based on [ubuntu](https://hub.docker.com/_/ubuntu) docker image. Extra tools:
 
 See [Cheatsheet](./CHEATSHEET.md) for keys
 
-![](debug.png)
+![](images/debug.png)
 
 ## Build
 
@@ -19,7 +19,7 @@ See [Cheatsheet](./CHEATSHEET.md) for keys
 
 ## Run
 
-Run the docker container and mount the project to edit onto /workspace.  The entrypoint.sh will attempt to update the built-in user to match the host UID/GID.  The entrypoint will also set git user/pass.  Also it may be convenient to mount ~/.ssh as the openssh-client is installed.
+Run the docker container and mount the project to edit onto /workspace.  The entrypoint.sh will attempt to update the built-in user to match the host UID/GID.  The entrypoint will also set git user/pass.  It may also be convenient to mount ~/.gnupg & ~/.ssh as gpg and openssh-client are installed.
 
 This container is intended to be long-running, the entrypoint is `tmux`.
 
@@ -27,6 +27,7 @@ This container is intended to be long-running, the entrypoint is `tmux`.
 docker run -it --rm \
     -v $(pwd):/workspace \
     -v ~/.ssh:/home/ubuntu/.ssh \
+    -v ~/.gnupg:/home/ubuntu/.gnupg \
     -v ~/.$(whoami).env:/home/ubuntu/.env \
     -e HOST_USER_ID=$(id -u $USER) \
     -e HOST_GROUP_ID=$(id -g $USER) \
@@ -41,7 +42,7 @@ tmux is using ctrl+h and vim mode eg ctrl+h h j k l to move between splits.  ctr
 
 ### neovim
 
-Neovim 0.9 is installed with vim-sensible so search with / and gruvbox dark default colorscheme.  .vim-tmp is written to each /workspace for my sanity.
+Neovim 0.12.6 is installed with vim-sensible so search with / and a dark treesitter compatible colorscheme.  .vim-tmp is written to each /workspace for my sanity.
 
 Nerdtree built in using ctrl+n to toggle.
 
@@ -51,9 +52,11 @@ vim-go is installed with [gofumpt](https://github.com/mvdan/gofumpt) as the defa
 
 ### golang
 
-go 1.21.12 is installed with related tools like [golangci-lint](https://github.com/golangci/golangci-lint) and [delve](https://github.com/go-delve/delve.
+go 1.27.3 is installed with related tools like [golangci-lint](https://github.com/golangci/golangci-lint) (v2) and [delve](https://github.com/go-delve/delve.
 
-### other
+### more stuff
 
 - [rexi](https://github.com/royreznik/rexi) TUI tool for testing regex
 - [wordgriner](https://github.com/davidgiven/wordgrinder) TUI for word processing
+- [age](https://github.com/FiloSottile/age) Encryption tool
+- [dblabs](https://github.com/danvergara/dblab/) Database client for command line

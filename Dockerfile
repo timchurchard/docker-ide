@@ -1,16 +1,18 @@
 # timchurchard/ide IDE for golang with neovim in docker
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 # Install system tools
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update -y && apt-get upgrade -y && \
-    apt install -y sudo gosu git curl zsh tmux apt-utils gnupg software-properties-common unzip locales build-essential cmake gettext htop jq
+    apt-get install -y sudo gosu screen xz-utils git curl zsh tmux apt-utils gnupg software-properties-common unzip locales build-essential cmake gettext htop jq less
 
 # Install Github CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg && \
 	chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg && \
 	echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null && \
 	apt update && \
-	apt install -y gh
+	apt-get install -y gh
 
 # Install aws cli v2
 RUN curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip -L && \
@@ -20,35 +22,37 @@ RUN curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zi
 
 # Install terraform
 # Note: Version 1.4.5 is fixed due to licensing issues with newer versions
-RUN curl -o- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | tee /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
+RUN curl -o- https://apt.releases.hashicorp.com/gpg | gpg --dearmor > /usr/share/keyrings/hashicorp-archive-keyring.gpg && \
     echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/hashicorp.list && \
-    apt update && apt install -y terraform=1.4.5-*
+    apt update && apt-get install -y "terraform=1.4.5-*"
 
 # Install terragrunt
 # Note: Version v0.45.4 is fixed due to compatibility with terraform
 RUN curl -L -o terragrunt https://github.com/gruntwork-io/terragrunt/releases/download/v0.45.4/terragrunt_linux_amd64 && \
     chmod a+x terragrunt && install terragrunt /usr/local/bin/terragrunt && rm terragrunt
 
+# Install wordgrinder (https://github.com/davidgiven/wordgrinder)
+RUN apt-get install -y ninja-build libncursesw5-dev zlib1g-dev libglfw3-dev pkg-config xxd python3 python3-pil && \
+	mkdir -p /usr/local/man/man1/ && \
+	git clone --branch 0.8 --depth 1 https://github.com/davidgiven/wordgrinder.git wordgrinder.git &&	\
+	cd wordgrinder.git && make && make install
+
 # Install python3 venv into /opt/venv
 # Note: rexi is a terminal regex101 (https://github.com/royreznik/rexi)
-RUN apt install -y python3 python3-venv && \
+RUN apt-get install -y python3 python3-venv && \
 	python3 -m venv /opt/venv && \
 	/opt/venv/bin/python3 -m pip install -U pip setuptools && \
 	/opt/venv/bin/pip3 install neovim && \
+	/opt/venv/bin/pip3 install "python-lsp-server[all]" python-lsp-isort pylsp-mypy python-lsp-black && \
 	/opt/venv/bin/pip3 install pylint pytest yapf && \
 	/opt/venv/bin/pip3 install rexi
 
 ENV PATH=$PATH:/opt/venv/bin
 
-# Install wordgrinder (https://github.com/davidgiven/wordgrinder)
-RUN apt install -y ninja-build libncursesw5-dev zlib1g-dev libglfw3-dev build-essential pkg-config xxd python3 python3-pil && \
-	mkdir -p /usr/local/man/man1/ && \
-	git clone https://github.com/davidgiven/wordgrinder.git wordgrinder.git &&	\
-	cd wordgrinder.git && make && make install
-
 # Install neovim: https://github.com/neovim/neovim/wiki/Installing-Neovim
-ENV VIM_COMMIT=v0.10.0
-RUN apt install -y luajit ruby-dev && \
+ENV VIM_COMMIT=v0.12.6
+
+RUN apt-get install -y luajit ruby-dev && \
 	apt remove neovim neovim-runtime neovim-qt && \
 	git clone https://github.com/neovim/neovim.git neovim.git && \
 	cd neovim.git && \
@@ -56,28 +60,31 @@ RUN apt install -y luajit ruby-dev && \
 	echo "building neovim ${VIM_COMMIT}... this will take a while" && \
 	make CMAKE_BUILD_TYPE=RelWithDebInfo >build.log 2>&1 && make install && \
     ln -sfv /usr/local/bin/nvim /usr/bin/vim && \
-    ln -sf /usr/local/bin/nvim /usr/bin/vi
+    ln -sf /usr/local/bin/nvim /usr/bin/vi # Override default vi/vim !!
 
 # Ruby neovim. dep
 RUN gem install neovim
 
 # Deps of telescope
-RUN apt install -y ripgrep fd-find
+RUN apt-get install -y ripgrep fd-find
 
 # Free (apt) space - No more apt after this
 RUN apt-get autoclean -y && apt-get autoremove -y && apt-get clean -y
 
 # Install golang
-ENV GOLANG_URL=https://golang.org/dl/go1.23.5.linux-amd64.tar.gz
-ENV GOLANG_SHA256=cbcad4a6482107c7c7926df1608106c189417163428200ce357695cc7e01d091
+ENV GOLANG_URL=https://golang.org/dl/go1.27.3.linux-amd64.tar.gz
+ENV GOLANG_SHA256=65efbc80fdc1fa2cd2631cad5b481777a68e8725f34e89f50fc6ac714e379b40
 
 RUN curl -o golang.tgz -L ${GOLANG_URL} && \
     echo "$GOLANG_SHA256 golang.tgz" > golang.tgz.sha256 && \
     sha256sum --check golang.tgz.sha256 && \
-    tar -C /opt -zxf golang.tgz
+    tar -C /opt -zxf golang.tgz && \
+    rm -v golang.tgz golang.tgz.sha256
 
 # tree-sitter
-RUN curl -OL https://github.com/tree-sitter/tree-sitter/releases/download/v0.20.9/tree-sitter-linux-x64.gz && \
+ENV TREESITTER_VERSION=v0.27.1
+
+RUN curl -OL https://github.com/tree-sitter/tree-sitter/releases/download/${TREESITTER_VERSION}/tree-sitter-linux-x64.gz && \
 	gunzip tree-sitter-linux-x64.gz && \
 	chmod a+x tree-sitter-linux-x64 && \
 	mv tree-sitter-linux-x64 /usr/bin/tree-sitter && \
@@ -109,45 +116,50 @@ USER ubuntu:ubuntu
 
 # Install font: https://www.nerdfonts.com/
 RUN mkdir -p ~/.fonts && cd ~/.fonts && \
-	curl -o Go-Mono.zip -L https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Go-Mono.zip && \
+	curl -o Go-Mono.zip -L https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.1/Go-Mono.zip && \
 	unzip Go-Mono.zip
 
 # Install Oh my zsh
 RUN curl -o- -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | bash
 
 # Install nvm and node stable
+ENV NVM_VERSION=v0.40.8
 ENV NVM_DIR="/home/ubuntu/.nvm"
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash && \
+
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/${NVM_VERSION}/install.sh | bash && \
 	zsh -c ". $NVM_DIR/nvm.sh && nvm install stable && npm install -g neovim"
 
 # Install vim-plug
 RUN curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-# Fetch nvim plugins (notice fixed versions)
+# Fetch nvim plugins (notice fixed versions) todo: fix more versions
 RUN mkdir -p ~/.config/nvim/plugged && cd ~/.config/nvim/plugged && \
+    git config --global advice.detachedHead false && \
 	git clone --depth 1 https://github.com/stevearc/aerial.nvim.git && \
 	git clone --depth 1 https://github.com/nvim-lua/plenary.nvim.git && \
-	git clone --branch 0.1.8 --depth 1 https://github.com/nvim-telescope/telescope.nvim.git && \
+	git clone --branch 0.2.1 --depth 1 https://github.com/nvim-telescope/telescope.nvim.git && \
 	git clone --depth 1 https://github.com/windwp/nvim-autopairs.git && \
 	git clone --depth 1 https://github.com/ntpeters/vim-better-whitespace.git && \
 	git clone --depth 1 https://github.com/neovim/nvim-lspconfig.git && \
-	git clone --branch v0.9.1 --depth 1 https://github.com/nvim-treesitter/nvim-treesitter.git && \
-	git clone --branch 0.7.0 --depth 1 https://github.com/mfussenegger/nvim-dap.git && \
-	git clone --branch v3.9.3 --depth 1 https://github.com/rcarriga/nvim-dap-ui.git && \
+	git clone --branch master --depth 1 https://github.com/nvim-treesitter/nvim-treesitter.git && \
+	git clone --branch 0.10.0 --depth 1 https://github.com/mfussenegger/nvim-dap.git && \
+	git clone --branch v4.0.0 --depth 1 https://github.com/rcarriga/nvim-dap-ui.git && \
+	git clone --depth 1 https://github.com/nvim-neotest/nvim-nio.git && \
 	git clone --depth 1 https://github.com/theHamsta/nvim-dap-virtual-text.git && \
 	git clone --depth 1 https://github.com/ray-x/guihua.lua.git && \
 	git clone --depth 1 https://github.com/ray-x/lsp_signature.nvim.git && \
-	git clone --depth 1 https://github.com/ray-x/go.nvim.git && \
+	git clone --branch v0.11 --depth 1 https://github.com/ray-x/go.nvim.git && \
 	git clone --branch release --depth 1 https://github.com/neoclide/coc.nvim.git && \
-	git clone --depth 1 https://github.com/kyazdani42/nvim-web-devicons.git && \
-	git clone --depth 1 https://github.com/kyazdani42/nvim-tree.lua.git && \
+	git clone --depth 1 https://github.com/nvim-tree/nvim-web-devicons.git && \
+	git clone --depth 1 https://github.com/nvim-tree/nvim-tree.lua.git && \
 	git clone --depth 1 https://github.com/vim-airline/vim-airline.git && \
 	git clone --depth 1 https://github.com/vim-airline/vim-airline-themes.git && \
 	git clone --depth 1 https://github.com/akinsho/toggleterm.nvim.git && \
 	git clone --depth 1 https://github.com/preservim/nerdcommenter.git && \
 	git clone --depth 1 https://github.com/tpope/vim-fugitive.git && \
 	git clone --depth 1 https://github.com/hashivim/vim-terraform.git && \
-	git clone --depth 1 https://github.com/EdenEast/nightfox.nvim.git
+	git clone --depth 1 https://github.com/EdenEast/nightfox.nvim.git && \
+	git clone --depth 1 https://github.com/ray-x/aurora.git
 
 # Install go tools
 ENV GO111MODULE=on
@@ -155,7 +167,7 @@ ENV CGO_ENABLED=0
 
 ENV PATH=$PATH:/opt/go/bin:/home/ubuntu/go/bin
 
-COPY files/install-gotools.sh /tmp/install-gotools.sh
+COPY files/install-gotools.sh /tmp/
 RUN /bin/bash /tmp/install-gotools.sh
 
 # Install neovim plugins and go tools
@@ -165,13 +177,10 @@ COPY files/coc-settings.json .config/nvim/
 
 RUN zsh -c ". $NVM_DIR/nvm.sh && cd ~/.config/nvim/plugged/coc.nvim && npm install && npm ci"
 
-RUN nvim +:PlugInstall +:qa \
-	nvim +:GoInstallBinaries +:qa \
-	nvim "+:TSInstall go" +:qa \
-	nvim "+:CocInstall coc-json coc-tsserver coc-go" +:qa
-
-# Copy in final bits for /opt
-COPY files/entrypoint.sh /opt/
+COPY files/install-nvim-extras.sh /tmp/
+# RUN /tmp/install-nvim-extras.sh # TODO: not working in docker build. needs investigation
+COPY files/install-nvim-extras.tar.gz /tmp/
+RUN tar xzfp /tmp/install-nvim-extras.tar.gz -C /
 
 COPY files/zshrc .zshrc
 COPY files/gitconfig .gitconfig
@@ -180,6 +189,10 @@ COPY files/pylintrc .pylintrc
 
 # Switch back to root and setup entrypoint
 USER root:root
+
+# Copy in final bits for /opt
+COPY files/entrypoint.sh /opt/
+COPY files/user-entrypoint.sh /opt/
 
 #CMD ["/bin/bash"]
 CMD ["/opt/entrypoint.sh"]
