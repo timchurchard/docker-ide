@@ -1,5 +1,9 @@
 #!/bin/bash
 
+mkdir -p ~/go/bin
+
+go install github.com/xxxserxxx/gotop/v4/cmd/gotop@latest
+
 go install golang.org/x/tools/gopls@latest
 
 go install github.com/google/gops@latest
@@ -19,8 +23,6 @@ go install github.com/yagipy/maintidx/cmd/maintidx@latest
 go install golang.org/x/vuln/cmd/govulncheck@latest
 
 go install golang.org/x/perf/cmd/benchstat@latest
-
-mkdir -p ~/go/bin
 
 # golang staticcheck
 go install honnef.co/go/tools/cmd/staticcheck@latest
@@ -42,8 +44,9 @@ go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 
 go install github.com/blmayer/awslambdarpc@latest
 
-go install github.com/xxxserxxx/gotop/v4/cmd/gotop@latest
+# even more tools
+go install github.com/danvergara/dblab@v0.9.2
 go install github.com/jesseduffield/lazydocker@latest
 
 # Install fixed version of linter !!
-go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.54.2
+go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0

@@ -12,6 +12,7 @@ Plug 'nvim-treesitter/nvim-treesitter'
 
 Plug 'mfussenegger/nvim-dap'
 Plug 'rcarriga/nvim-dap-ui'
+Plug 'nvim-neotest/nvim-nio'
 Plug 'theHamsta/nvim-dap-virtual-text'
 
 Plug 'ray-x/guihua.lua' " float term, codeaction and codelens gui support
@@ -43,8 +44,8 @@ Plug 'tpope/vim-fugitive'
 
 Plug 'hashivim/vim-terraform'
 
-Plug 'EdenEast/nightfox.nvim'
-" Plug 'ray-x/aurora'
+" Plug 'EdenEast/nightfox.nvim'
+Plug 'ray-x/aurora'
 
 call plug#end()
 
@@ -60,8 +61,8 @@ set undofile " Maintain undo history between sessions
 set undodir=~/.vim/undodir"
 
 " colours
-" colorscheme aurora
-colorscheme nightfox
+colorscheme aurora
+" colorscheme nightfox
 
 " Disable beep / flash
 set vb t_vb=
@@ -207,9 +208,6 @@ nnoremap <C-t> :ToggleTerm size=25<CR>
 "C-o godef back
 "C-l godef forward
 
-"todo installed in /opt/venv
-"let g:python3_host_prog = '/home/tc/.config/nvim/venv38/bin/python3'
-
 let g:better_whitespace_enabled=1
 let g:strip_whitespace_on_save=1
 let g:strip_whitespace_confirm=0
@@ -228,7 +226,7 @@ let g:terraform_fmt_on_save=1
 let g:terraform_align=1
 
 " gofmt on save
-autocmd BufWritePre *.go :silent! lua require('go.format').goimports()
+autocmd BufWritePre *.go :silent! lua require('go.format').goimport()
 
 " Auto start NERD tree when opening a directory
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NvimTreeToggle' argv()[0] | wincmd p | ene | wincmd p | endif
@@ -258,8 +256,7 @@ require("toggleterm").setup{
 
 require 'go'.setup({
   goimports = 'gopls', -- if set to 'gopls' will use golsp format
-  gofmt = 'gofmt', -- if set to gopls will use golsp format
-  max_line_len = 160,
+  gofmt = 'gopls', -- if set to gopls will use golsp format
   tag_transform = false, -- gomodifytag overwrite eg snakecase camelcase
   test_dir = '',
   comment_placeholder = ' ',
@@ -267,15 +264,52 @@ require 'go'.setup({
   lsp_gofumpt = true, -- true: set default gofmt in gopls format to gofumpt
   lsp_on_attach = true, -- use on_attach from go.nvim
   dap_debug = true,
+  lsp_inlay_hints = {
+      enable = true, -- this is the only field apply to neovim > 0.10
+  },
 })
 
 cfg = {...}  -- add you config here
 require "lsp_signature".setup(cfg)
 
-require("go.format").goimports()  -- goimport + gofmt
+require("go.format").goimport()  -- goimport + gofmt
 
 local protocol = require'vim.lsp.protocol'
 
 require('aerial').setup({})
+
+--require('nightfox').setup({
+--  options = {
+--    styles = {
+--      comments = "italic",
+--      functions = "bold",
+--    }
+--  }
+--})
+
+-- pylsp via the new lspconfig API (nvim >= 0.11)
+vim.lsp.config('pylsp', {
+  settings = {
+    pylsp = {
+      plugins = {
+        -- formatter options
+        black = { enabled = true },
+        autopep8 = { enabled = false },
+        yapf = { enabled = false },
+        -- linter options
+        pylint = { enabled = true, executable = "pylint" },
+        pyflakes = { enabled = false },
+        pycodestyle = { enabled = false },
+        -- type checker
+        pylsp_mypy = { enabled = true },
+        -- auto-completion options
+        jedi_completion = { fuzzy = true },
+        -- import sorting
+        pyls_isort = { enabled = true },
+      },
+    },
+  },
+})
+vim.lsp.enable('pylsp')
 
 EOF
